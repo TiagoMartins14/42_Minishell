@@ -1,2 +1,2 @@
-# 42_Minishell
+# 42-Minishell
 This project is about creating a simple shell
