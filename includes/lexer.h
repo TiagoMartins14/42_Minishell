@@ -6,7 +6,7 @@
 /*   By: jrocha-v <jrocha-v@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/07 09:24:19 by tiaferna          #+#    #+#             */
-/*   Updated: 2024/03/04 12:40:29 by jrocha-v         ###   ########.fr       */
+/*   Updated: 2024/03/29 23:13:56 by jrocha-v         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,11 @@ int		lexer_main(t_mshell *init, char ***envp_copy, int *exit_code);
 
 // lexer_split.c
 void	lexer_split(t_mshell *init);
+void	create_all_tokens(t_mshell *init, size_t i);
 
 // lexer_split_utils.c
 int		lexer_size_of_word(char *s, size_t *i, t_mshell *init);
+int		special_lexer_size_of_word(char *s, size_t *i, t_mshell *init);
 size_t	len_update(char *s, unsigned int start, size_t len);
 char	*ft_lexer_substr(char *s, unsigned int start, size_t len);
 

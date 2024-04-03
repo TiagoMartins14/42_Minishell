@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   structs.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tiaferna <tiaferna@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jrocha-v <jrocha-v@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/19 09:44:11 by jrocha-v          #+#    #+#             */
-/*   Updated: 2024/03/11 16:53:47 by tiaferna         ###   ########.fr       */
+/*   Updated: 2024/04/01 17:30:41 by jrocha-v         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,15 @@ typedef struct s_env
 
 typedef struct s_mshell
 {
+	char				***envp_copy;
 	char				*in;
+	char				*origin_in;
 	bool				set_var;
 	char				**tcmd_full;
 	char				*tcmd_path;
 	char				*tredirs;
 	char				*eof;
+	char				**redirs;
 	int					nbr_pipes;
 	int					*child_pids;
 	int					**pipe_fds;
@@ -43,6 +46,7 @@ typedef struct s_mshell
 	int					red_output;
 	bool				expand_heredoc;
 	bool				stop_exec;
+	bool				is_echo;
 	struct s_env		*env_table;
 	struct s_expand		*exp;
 	struct s_lexer		*lexer;
