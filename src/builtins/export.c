@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tiaferna <tiaferna@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jrocha-v <jrocha-v@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/03 11:22:25 by tiaferna          #+#    #+#             */
-/*   Updated: 2024/03/20 17:40:54 by tiaferna         ###   ########.fr       */
+/*   Updated: 2024/03/31 18:42:41 by jrocha-v         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int	var_exists(t_mshell *init, int *i, char **export_split, char ***envp_copy)
 					free(env_node->content);
 				env_node->content = ft_strdup(export_split[1]);
 			}
-			*envp_copy = update_envp_copy(init, envp_copy);
+			*envp_copy = update_envp_copy(init, envp_copy, 0, NULL);
 			ft_free_smatrix(export_split);
 			(*i)++;
 			return (0);
@@ -78,14 +78,14 @@ void	export_new(t_mshell *init, char ***envp_copy, int *exit_code)
 		if (export_split[1])
 			env_node->content = ft_strdup(export_split[1]);
 		ft_free_smatrix(export_split);
-		*envp_copy = update_envp_copy(init, envp_copy);
+		*envp_copy = update_envp_copy(init, envp_copy, 0, NULL);
 		i++;
 	}
 }
 
 void	export_printer(t_env *prnt)
 {
-	if (strcmp(prnt->var, "_") != 0 && prnt->visibility == 0)
+	if (ft_strcmp(prnt->var, "_") != 0 && prnt->visibility == 0)
 	{
 		if (prnt->content)
 			printf("declare -x %s=\"%s\"\n", prnt->var, prnt->content);

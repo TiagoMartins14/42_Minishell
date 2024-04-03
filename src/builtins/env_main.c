@@ -3,17 +3,40 @@
 /*                                                        :::      ::::::::   */
 /*   env_main.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tiaferna <tiaferna@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jrocha-v <jrocha-v@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 09:28:50 by jrocha-v          #+#    #+#             */
-/*   Updated: 2024/03/20 17:38:41 by tiaferna         ###   ########.fr       */
+/*   Updated: 2024/04/01 17:54:27 by jrocha-v         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-/* Duplicates envp */
+void	set_shlvl(t_mshell *init)
+{
+	t_env	*node;
+	char	*temp;
+	int		val;
 
+	node = init->env_table;
+	while (node && ft_strcmp(node->var, "SHLVL") != 0)
+	{
+		if (node->next == NULL)
+		{
+			printf("vazio\n");
+			create_env_node("SHLVL", "1");
+			return ;
+		}
+		node = node->next;
+	}
+	val = ft_atoi(node->content) + 1;
+	free(node->content);
+	temp = ft_itoa(val);
+	node->content = ft_strdup(temp);
+	free(temp);
+}
+
+/* Duplicates envp */
 char	*ft_strdup_env(const char *str)
 {
 	char	*temp;
@@ -31,7 +54,6 @@ char	*ft_strdup_env(const char *str)
 }
 
 /* Creates env node */
-
 t_env	*create_env_node(char *var, char *content)
 {
 	t_env	*node;
@@ -74,6 +96,7 @@ int	*create_env_list(t_mshell *init, char **envp_copy)
 	t_env	*env_list;
 
 	i = 0;
+	init->env_table = NULL;
 	while ((envp_copy)[i])
 	{
 		temp = ft_split((envp_copy)[i], '=');
@@ -85,5 +108,6 @@ int	*create_env_list(t_mshell *init, char **envp_copy)
 		i++;
 	}
 	init->env_table = env_list;
+	set_shlvl(init);
 	return (0);
 }
