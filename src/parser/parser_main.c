@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_main.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tiaferna <tiaferna@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jrocha-v <jrocha-v@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 09:06:55 by jrocha-v          #+#    #+#             */
-/*   Updated: 2024/03/28 18:16:03 by tiaferna         ###   ########.fr       */
+/*   Updated: 2024/04/11 11:54:31 by jrocha-v         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,10 @@ t_parser	*create_parser_node(t_mshell *init, char *cmds, t_parser *node)
 	}
 	else
 	{
+		if (ft_strlen(cmds) == 1 && init->var_nf)
+			node->var_nf = true;
+		else
+			node->var_nf = false;
 		node->cmd_exec = ft_split(cmds, '\t');
 		node->path_exec = ft_strdup(init->tcmd_path);
 		node->cmd_type = cmd_router(node->cmd_exec[0]);
@@ -33,11 +37,7 @@ t_parser	*create_parser_node(t_mshell *init, char *cmds, t_parser *node)
 		node->redirs = NULL;
 	else
 		node->redirs = ft_strdup(init->tredirs);
-	node->input = init->red_input;
-	node->output = init->red_output;
-	node->next = NULL;
-	node->token_err = false;
-	node->file_nf = false;
+	create_parser_node_aux(init, &node);
 	return (node);
 }
 
@@ -65,7 +65,7 @@ t_parser	*parser_node_router(t_mshell *init, char ***envp_copy,
 	if (cmds)
 	{
 		init->tcmd_full = ft_split(cmds, '\t');
-		init->tcmd_path = find_cmd(init->tcmd_full[0], init, envp_copy);
+		init->tcmd_path = find_cmd(init->tcmd_full[0], init, envp_copy, NULL);
 	}
 	if (!parser)
 		parser = create_parser_node(init, cmds, NULL);
@@ -73,6 +73,7 @@ t_parser	*parser_node_router(t_mshell *init, char ***envp_copy,
 		parser_node_push_back(init, &parser, cmds, NULL);
 	free_parser_temps(cmds, init->tredirs, init->tcmd_path, init->tcmd_full);
 	init->parser = parser;
+	init->var_nf = false;
 	return (parser);
 }
 
@@ -113,10 +114,10 @@ void	parser_main(t_mshell *init, char ***envp_copy, t_parser *parser,
 	lexer = init->lexer;
 	while (lexer)
 	{
-		if (lexer->operator == PIPE)
-			lexer = lexer->next;
+		parser_main_aux1(init, &lexer);
 		while (lexer && lexer->operator != PIPE)
 		{
+			parser_main_aux2(init, &lexer);
 			if (lexer->operator >= 3 && lexer->operator <= 6)
 				init->tredirs = get_redirs(init, init->tredirs, &lexer);
 			else if (lexer->operator == CMD && !cmds)

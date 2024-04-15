@@ -3,21 +3,38 @@
 /*                                                        :::      ::::::::   */
 /*   lexer_split.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jrocha-v <jrocha-v@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: tiaferna <tiaferna@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/07 10:11:12 by tiaferna          #+#    #+#             */
-/*   Updated: 2024/03/29 23:13:43 by jrocha-v         ###   ########.fr       */
+/*   Updated: 2024/04/15 12:51:31 by tiaferna         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
+
+bool	is_s_quote_str(t_mshell *init, size_t *i, size_t *len)
+{
+	if (init->in[*i] && init->in[*i] == '\'')
+	{
+		(*len)++;
+		while (init->in[*i + *len] != '\'')
+			(*len)++;
+		(*len)++;
+		(*i) += *len;
+		init->lexer->str = ft_substr(init->in, *i - *len, *len);
+		return (true);
+	}
+	return (false);
+}
 
 void	create_token(t_mshell *init, size_t *i)
 {
 	size_t	len;
 
 	len = 0;
-	if (ft_strnstr(init->origin_in, init->in + *i, ft_strlen(init->origin_in)))
+	if (is_s_quote_str(init, i, &len) == true)
+		return ;
+	else if (ft_strnstr(init->origin_in, init->in + *i, ft_strlen(init->origin_in)) && init->in[*i] != '\'')
 	{
 		if ((init->in[*i] == '<' && init->in[*i + 1] == '<' ) || \
 		(init->in[*i] == '>' && init->in[*i + 1] == '>' ))
@@ -37,8 +54,6 @@ void	create_token(t_mshell *init, size_t *i)
 	else
 		len = special_lexer_size_of_word(init->in, i, init);
 	init->lexer->str = ft_lexer_substr(init->in, *i - len, len);
-	if (init->in[*i] && (init->in[*i] == '\"' || init->in[*i] == '\''))
-		(*i)++;
 }
 
 void	malloc_tokens(t_mshell *init, int i)
@@ -52,7 +67,7 @@ void	malloc_tokens(t_mshell *init, int i)
 	{
 		init->lexer->next = (t_lexer *)malloc(sizeof(t_lexer));
 		lexer_init(init->lexer->next);
-		init->lexer->next->prev = init->lexer->next;
+		init->lexer->next->prev = init->lexer;
 		init->lexer = init->lexer->next;
 	}
 }
@@ -71,12 +86,13 @@ void	create_all_tokens(t_mshell *init, size_t i)
 		malloc_tokens(init, i);
 		if (!lexer_head)
 			lexer_head = init->lexer;
-		if (i < in_len - 1 && (ft_iswhitespace(init->in[i + 2])) \
+		if (i < in_len - 1 && (ft_iswhitespace(init->in[i + 2]) \
+				|| !init->in[i + 2]) \
 				&& ((init->in[i] == '\"' && init->in[i + 1] == '\"')
 				|| (init->in[i] == '\'' && init->in[i + 1] == '\'')))
 		{
-			if (init->is_echo == false)
-				init->lexer->str = ft_strdup("\'\'");
+			init->lexer->str = ft_strdup("''");
+			init->lexer->true_sign = false;
 			i += 2;
 		}
 		else if (init->in[i] && !ft_iswhitespace(init->in[i]))
@@ -88,8 +104,6 @@ void	create_all_tokens(t_mshell *init, size_t i)
 void	lexer_split(t_mshell *init)
 {
 	init->lexer = NULL;
-	if (ft_strnstr(init->in, "echo", ft_strlen(init->in)) != NULL)
-		init->is_echo = true;
 	create_all_tokens(init, 0);
 	free(init->origin_in);
 	return ;

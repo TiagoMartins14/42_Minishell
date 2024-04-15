@@ -6,7 +6,7 @@
 /*   By: jrocha-v <jrocha-v@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/03 14:22:15 by jrocha-v          #+#    #+#             */
-/*   Updated: 2024/03/13 16:19:56 by jrocha-v         ###   ########.fr       */
+/*   Updated: 2024/04/10 17:05:47 by jrocha-v         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,9 @@ void	print_parser(t_mshell *init)
 		if (parser->redirs)
 			printf("redirs-> %s\n", parser->redirs);
 		printf("input-> %d\n", parser->input);
-		printf("output-> %d\n\n", parser->output);
+		printf("output-> %d\n", parser->output);
+		printf("file_nf-> %d\n", parser->file_nf);
+		printf("token_err-> %d\n\n", parser->token_err);
 		parser = parser->next;
 	}
 }
@@ -50,7 +52,7 @@ void	print_lexer(t_mshell *init)
 		printf("str:%s\n", lexer->str);
 		printf("op:%d\n", lexer->operator);
 		printf("previous: %p\n", lexer->prev);
-		printf("next: %p\n", lexer->next);
+		printf("next: %p\n\n", lexer->next);
 		lexer = lexer->next;
 	}
 }
@@ -64,7 +66,8 @@ void	print_env(t_mshell *init)
 	while (env_table)
 	{
 		printf("%s=", env_table->var);
-		printf("%s\n", env_table->content);
+		if (env_table->content)
+			printf("%s\n", env_table->content);
 		env_table = env_table->next;
 	}
 }

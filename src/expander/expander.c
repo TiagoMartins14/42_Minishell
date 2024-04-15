@@ -12,18 +12,24 @@
 
 #include "../includes/minishell.h"
 
-void	expand(t_mshell *init, t_env *env_node, int *exit_code)
+int	expand_aux(char *alph_exit_code)
+{
+	free(alph_exit_code);
+	return (0);
+}
+
+void	expand(t_mshell *init, t_lexer *lex_nd, t_env *env_nd, int *exit_code)
 {
 	char		*i_inp;
 	t_expand	*i_exp;
 	char		*alph_exit_code;
 
-	i_inp = init->in;
+	i_inp = lex_nd->str;
 	i_exp = init->exp;
 	alph_exit_code = ft_itoa(*exit_code);
-	if (env_node == NULL && (i_inp[i_exp->i] != '$' || \
+	if (env_nd == NULL && (i_inp[i_exp->i] != '$' || \
 	i_inp[i_exp->i + 1] != '?' || i_exp->s_quote != 1))
-		clear_macro(init);
+		clear_macro(init, lex_nd);
 	else
 	{
 		i_exp->new_input = ft_strldup(i_inp, i_exp->i);
@@ -32,35 +38,47 @@ void	expand(t_mshell *init, t_env *env_node, int *exit_code)
 			i_exp->new_input = ft_strupdate(i_exp->new_input, alph_exit_code);
 		else
 			i_exp->new_input = ft_strupdate(i_exp->new_input, \
-			env_node->content);
+			env_nd->content);
 		i_exp->new_input = ft_strupdate(i_exp->new_input, \
 		i_inp + i_exp->i + i_exp->macro_len);
-		update_input(init);
+		update_input(init, lex_nd);
+		lex_nd->true_sign = false;
 	}
-	free(alph_exit_code);
-	i_exp->i = 0;
+	i_exp->i = expand_aux(alph_exit_code);
 }
 
-void	expander(t_mshell *init, int *exit_code)
+void	expander(t_mshell *init, int *ext_cd, t_env *env_nd, t_lexer *lex_nd)
 {
-	t_env	*env_node;
-
-	init->exp = (t_expand *)malloc(sizeof(t_expand));
-	expander_init(init->exp);
-	while (init->in[init->exp->i])
+	while (lex_nd)
 	{
-		env_node = init->env_table;
-		env_node = macro_check_and_fetch(init, env_node);
-		if (init->in[init->exp->i] == '<' && init->in[init->exp->i + 1] == '<')
-			ignore_eof_macro(init);
-		else if (init->in[init->exp->i] == '$' && init->in[init->exp->i + 1] \
-		&& (ft_iswhitespace(init->in[init->exp->i + 1]) || \
-		init->in[init->exp->i + 1] == '\"') && init->exp->s_quote == 1)
-			init->exp->i++;
-		else if (init->in[init->exp->i] != '$' || (init->in[init->exp->i] == \
-		'$' && init->exp->s_quote == 0))
-			init->exp->i++;
-		else
-			expand(init, env_node, exit_code);
+		init->exp = (t_expand *)malloc(sizeof(t_expand));
+		expander_init(init->exp);
+		while (lex_nd->str[init->exp->i])
+		{
+			env_nd = macro_check_fetch(init, init->env_table, lex_nd);
+			if (lex_nd->str[init->exp->i] == '<' && \
+			lex_nd->str[init->exp->i + 1] == '<')
+				ignore_eof_macro(init, lex_nd);
+			else if (lex_nd->str[init->exp->i] == '$' && \
+			(!lex_nd->str[init->exp->i + 1] || (lex_nd->str[init->exp->i + 1] \
+			&& (ft_iswhitespace(lex_nd->str[init->exp->i + 1]) || \
+			lex_nd->str[init->exp->i + 1] == '\"') && init->exp->s_quote == 1)))
+				init->exp->i++;
+			else if (lex_nd->str[0] == '\'')
+			{
+				char *temp = ft_strdup(lex_nd->str);
+				free(lex_nd->str);
+				lex_nd->str = ft_substr(temp, 1, ft_strlen(temp) - 2);
+				free(temp);
+			}
+			else if (lex_nd->str[init->exp->i] != '$' || \
+				(lex_nd->str[init->exp->i] == \
+			'$' && init->exp->s_quote == 0))
+				init->exp->i++;
+			else
+				expand(init, lex_nd, env_nd, ext_cd);
+		}
+		lex_nd = lex_nd->next;
+		free(init->exp);
 	}
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jrocha-v <jrocha-v@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: tiaferna <tiaferna@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/29 09:58:13 by tiaferna          #+#    #+#             */
-/*   Updated: 2024/03/31 18:43:17 by jrocha-v         ###   ########.fr       */
+/*   Updated: 2024/04/15 11:56:27 by tiaferna         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,20 +58,22 @@ void	update_dir(t_mshell *init, t_parser *parser, char **new_dir, \
 {
 	char	*file_err;
 
-	if (parser->cmd_exec[1] == NULL)
+	if (parser->cmd_exec[1] == NULL || ft_strcmp(parser->cmd_exec[1], "~") == 0)
 	{
 		*new_dir = ft_strdup(get_home(init));
 		chdir(*new_dir);
 	}
-	else
+	else if (ft_strcmp(parser->cmd_exec[1], "-") == 0)
 	{
-		if (chdir(parser->cmd_exec[1]) != 0)
-		{
-			file_err = strerror(errno);
-			printf("minishell: cd: %s: %s\n", parser->cmd_exec[1], file_err);
-		}
-		*new_dir = getcwd(NULL, 0);
+		*new_dir = ft_strdup(get_oldpwd(init));
+		chdir(*new_dir);
 	}
+	else if (chdir(parser->cmd_exec[1]) != 0)
+	{
+		file_err = strerror(errno);
+		printf("minishell: cd: %s: %s\n", parser->cmd_exec[1], file_err);
+	}
+	*new_dir = getcwd(NULL, 0);
 	while (node && ft_strcmp(node->var, "PWD") != 0)
 		node = node->next;
 	if (!node)

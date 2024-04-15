@@ -6,7 +6,7 @@
 /*   By: jrocha-v <jrocha-v@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/10 10:44:03 by tiaferna          #+#    #+#             */
-/*   Updated: 2024/04/01 17:54:20 by jrocha-v         ###   ########.fr       */
+/*   Updated: 2024/04/10 21:51:08 by jrocha-v         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ void	lexer_init(t_lexer *lexer)
 	lexer->i = 0;
 	lexer->d_quote_expand = 0;
 	lexer->is_node = 0;
+	lexer->true_sign = true;
 	lexer->next = NULL;
 	lexer->prev = NULL;
 }
@@ -47,6 +48,7 @@ void	parser_init(t_parser *parser)
 	parser->redirs = NULL;
 	parser->file_nf = false;
 	parser->token_err = false;
+	parser->var_nf = true;
 	parser->cmd_type = 0;
 	parser->input = 0;
 	parser->output = 0;

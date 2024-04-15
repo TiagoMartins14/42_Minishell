@@ -1,33 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   eof_handler.c                                      :+:      :+:    :+:   */
+/*   executer_utils_3.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jrocha-v <jrocha-v@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/02/07 11:37:04 by tiaferna          #+#    #+#             */
-/*   Updated: 2024/04/11 12:45:47 by jrocha-v         ###   ########.fr       */
+/*   Created: 2024/04/11 09:20:37 by jrocha-v          #+#    #+#             */
+/*   Updated: 2024/04/11 09:31:22 by jrocha-v         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-char	*settle_eof(t_mshell *init, char *eof)
+void	safe_closedir(DIR *dir)
 {
-	init->expand_heredoc = true;
-	if ((eof[0] == '\'' && eof[ft_strlen(eof) - 1] == '\'') || \
-	(eof[0] == '\"' && eof[ft_strlen(eof) - 1] == '\"'))
-	{
-		init->expand_heredoc = false;
-		if (init->eof)
-			free(init->eof);
-		init->eof = ft_strldup(eof + 1, ft_strlen(eof) - 2);
-	}
-	else
-	{
-		if (init->eof)
-			free(init->eof);
-		init->eof = ft_strdup(eof);
-	}
-	return (init->eof);
+	if (dir != NULL)
+		closedir(dir);
+}
+
+void	safe_closedir_fd(DIR *dir, int fd)
+{
+	if (dir != NULL)
+		closedir(dir);
+	if (fd < 0)
+		return ;
+	close(fd);
 }

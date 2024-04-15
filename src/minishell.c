@@ -6,7 +6,7 @@
 /*   By: jrocha-v <jrocha-v@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 14:06:33 by jrocha-v          #+#    #+#             */
-/*   Updated: 2024/04/01 19:50:17 by jrocha-v         ###   ########.fr       */
+/*   Updated: 2024/04/08 20:07:49 by jrocha-v         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ char	*prompt_line(char **envp_copy)
 int	minishell(int exit_code, char **envp, char *input, char *line)
 {
 	t_mshell	*init;
+	int			proc_exit_val;
 
 	while (1)
 	{
@@ -51,9 +52,10 @@ int	minishell(int exit_code, char **envp, char *input, char *line)
 		set_prompt_and_get_input(envp, &input, &line);
 		if (check_whitespace(input) == 1)
 			continue ;
-		if (process_exit(input, &exit_code) == 0)
+		proc_exit_val = process_exit(input, &exit_code);
+		if (proc_exit_val == 0)
 			break ;
-		else if (process_exit(input, &exit_code) == 1)
+		else if (proc_exit_val == 1)
 			continue ;
 		if (quotes_checker(input) != 0)
 			continue ;
@@ -76,10 +78,10 @@ int	main(int argc, char **argv, char **envp)
 	exit_code = 0;
 	if (argc != 1)
 		args_error();
-	envp_copy = envp_dup(envp);
+	envp_copy = envp_dup(envp, -1);
 	exit_code = minishell(exit_code, envp_copy, NULL, NULL);
 	(void)argv;
 	if (exit_code < 0)
-		exit_code = exit_code + 100;
+		exit_code = exit_code + 500;
 	return (exit_code);
 }

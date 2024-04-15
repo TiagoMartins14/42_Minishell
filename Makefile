@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: jrocha-v <jrocha-v@student.42porto.com>    +#+  +:+       +#+         #
+#    By: tiaferna <tiaferna@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/11/15 07:44:06 by tiaferna          #+#    #+#              #
-#    Updated: 2024/04/01 18:23:50 by jrocha-v         ###   ########.fr        #
+#    Updated: 2024/04/11 12:25:00 by tiaferna         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -55,24 +55,28 @@ SRCS			= 	minishell.c \
 					expander/eof_handler.c \
 					expander/macros_tools.c \
 					parser/parser_main.c \
+					parser/parser_main_utils.c \
 					parser/parser_cmd.c \
 					parser/parser_utils.c \
 					executer/executer_heredoc_expander.c \
 					executer/executer_main.c \
 					executer/executer_utils_1.c \
 					executer/executer_utils_2.c \
+					executer/executer_utils_3.c \
 					executer/executer_single_cmd.c \
 					executer/executer_multi_cmds.c \
 					executer/executer_multi_redirs.c \
 					executer/executer_multi_utils.c \
 					executer/executer_redirs_utils.c \
 					builtins/cd.c \
+					builtins/cd_utils.c \
 					builtins/env_main.c \
 					builtins/env.c \
 					builtins/exit_shell.c \
 					builtins/echo.c \
 					builtins/export.c \
-					builtins/export_utils.c \
+					builtins/export_utils_1.c \
+					builtins/export_utils_2.c \
 					builtins/unset.c \
 					builtins/pwd.c \
 					builtins/new_var_set.c \
@@ -105,7 +109,7 @@ $(LIBFT):
 
 #testing leaks
 leaks: leaks.supp
-	valgrind --suppressions=leaks.supp --leak-check=full --show-leak-kinds=all --trace-children=yes --track-fds=yes ./minishell
+	valgrind --suppressions=leaks.supp --leak-check=full --show-leak-kinds=all --trace-children=yes --track-fds=yes --track-origins=yes ./minishell
 
 leaks.supp:
 	@echo "{" > leaks.supp
