@@ -6,7 +6,7 @@
 /*   By: jrocha-v <jrocha-v@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/21 18:09:36 by tiaferna          #+#    #+#             */
-/*   Updated: 2024/04/01 19:22:59 by jrocha-v         ###   ########.fr       */
+/*   Updated: 2024/04/11 13:32:22 by jrocha-v         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define EXECUTER_H
 
 # include "../includes/minishell.h"
+# include <dirent.h>
 
 // executer_main.c
 void	get_exit_code(int status, int *exit_code);
@@ -30,16 +31,20 @@ void	executer_cmd_router(t_mshell *init, t_parser *parser_node, \
 			char ***strings_env, int *exit_code);
 
 // executer_utils_2.c
+void	free_all_exit_code(t_mshell *init, char ***envp, int *exit_code);
 void	free_all(t_mshell *init, char ***envp);
-void	hd_delete_lists(t_mshell *init);
 void	free_hd_vars(char **redirs, char *input, int pipe_fd);
 void	pre_env_exec(t_mshell *init, t_parser *parser_node, char ***envp);
 void	free_exec_helper(t_mshell *init, t_parser *parser_node, char ***envp, \
 			char *file_err);
-			
+
+// executer_utils_3.c
+void	safe_closedir(DIR *dir);
+void	safe_closedir_fd(DIR *dir, int fd);
+
 // executer_single_cmd.c
 int		single_cmd_isdir(char *cmd);
-int		single_cmd_notfound(t_mshell *init);
+int		single_cmd_notfound(t_mshell *init, int file_fd, DIR *dir);
 void	fork_single_cmd(t_mshell *init, t_parser *parser_node, \
 			char ***strings_env, int *exit_code);
 void	process_single_cmd(t_mshell *init, char ***strings_env, int *exit_code);
@@ -48,7 +53,8 @@ void	single_redirs_router(t_mshell *init, t_parser *node, int *exit_code, \
 
 // executer_multi_cmds.c
 int		multi_cmd_isdir(t_mshell *init, char *cmd);
-int		multi_cmd_notfound(t_mshell *init, t_parser *parser_node);
+int		multi_cmd_notfound(t_mshell *init, t_parser *parser_node, int file_fd, \
+			DIR *dir);
 void	process_pipes(t_mshell *init);
 void	process_child(t_mshell *init, t_parser *parser_node, \
 									char ***strings_env, int *exit_code);
@@ -62,6 +68,8 @@ void	multi_redir_output(t_mshell *init, t_parser *node);
 void	multi_redirs_router(t_mshell *init, t_parser *node, int *exit_code);
 
 // executer_multi_utils.c
+void	exit_err_multi_cmds(t_mshell *init, t_parser *parser_node, \
+			int *exit_code, char ***envp);
 void	close_parent_pipes(t_mshell *init);
 void	close_redirs_pipes(t_mshell *init, t_parser *node);
 void	close_child_pipes(t_mshell *init);

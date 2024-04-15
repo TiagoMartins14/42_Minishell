@@ -6,7 +6,7 @@
 /*   By: jrocha-v <jrocha-v@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/19 09:44:11 by jrocha-v          #+#    #+#             */
-/*   Updated: 2024/04/01 17:30:41 by jrocha-v         ###   ########.fr       */
+/*   Updated: 2024/04/10 22:28:23 by jrocha-v         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ typedef struct s_mshell
 	char				*tredirs;
 	char				*eof;
 	char				**redirs;
+	char				**paths;
 	int					nbr_pipes;
 	int					*child_pids;
 	int					**pipe_fds;
@@ -44,9 +45,10 @@ typedef struct s_mshell
 	int					og_stdout;
 	int					red_input;
 	int					red_output;
+	int					parser_flag;
 	bool				expand_heredoc;
 	bool				stop_exec;
-	bool				is_echo;
+	bool				var_nf;
 	struct s_env		*env_table;
 	struct s_expand		*exp;
 	struct s_lexer		*lexer;
@@ -60,6 +62,7 @@ typedef struct s_lexer
 	int				i;
 	int				d_quote_expand;
 	int				is_node;
+	bool			true_sign;
 	struct s_lexer	*next;
 	struct s_lexer	*prev;
 }	t_lexer;
@@ -80,6 +83,7 @@ typedef struct s_parser
 	char			*redirs;
 	bool			file_nf;
 	bool			token_err;
+	bool			var_nf;
 	int				cmd_type;
 	int				input_t;
 	int				output_t;
