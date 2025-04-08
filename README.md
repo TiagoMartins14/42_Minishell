@@ -32,3 +32,8 @@ It should be executed in this way:
 ```shell
 $> ./minishell
 ```
+## 👥 Contributors
+This project was developed collaboratively as part of the 42 School curriculum.
+
+- [josevazf](https://github.com/josevazf)
+
